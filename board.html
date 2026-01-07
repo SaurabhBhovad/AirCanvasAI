@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Air Canvas Board</title>
+    <style>
+        body { font-family: sans-serif; background: #222; margin: 0; color: white; text-align: center; }
+        .controls { padding: 20px; background: #333; display: flex; justify-content: center; gap: 20px; align-items: center; }
+        h2 { margin: 0; margin-right: 20px; }
+        .btn { padding: 10px 20px; font-size: 16px; border: none; cursor: pointer; border-radius: 5px; color: white; transition: 0.3s; }
+        
+        .btn-save { background: #2980b9; }
+        .btn-clear { background: #c0392b; }
+        .btn-share { background: #8e44ad; } /* Purple for Screen Share */
+        .btn:hover { opacity: 0.8; }
+
+        .video-container { margin-top: 10px; }
+        img { border: 5px solid #555; border-radius: 10px; max-width: 90%; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+    </style>
+    <script>
+        function sendAction(action) {
+            fetch('/' + action, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'saved') alert("✅ Board Saved!");
+                if(data.status === 'cleared') alert("🧹 Board Cleared!");
+                if(data.status === 'screen' || data.status === 'webcam') {
+                    // Just log status, the video feed updates automatically
+                    console.log("Switched to " + data.status);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="controls">
+        <h2>👤 {{ user.name }}</h2>
+        <button class="btn btn-save" onclick="sendAction('save_board')">💾 Save Note</button>
+        <button class="btn btn-clear" onclick="sendAction('clear_board')">🧹 Clear Board</button>
+        <button class="btn btn-share" onclick="sendAction('toggle_mode')">📺 Toggle Screen Share</button>
+        <a href="/"><button class="btn" style="background:#555">Logout</button></a>
+    </div>
+
+    <div class="video-container">
+        <img src="{{ url_for('video_feed') }}" width="1080">
+    </div>
+</body>
+</html>
